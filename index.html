@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>My Presentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/black.min.css" id="theme">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css">
+</head>
+<body>
+<div class="reveal">
+    <div class="slides">
+        <section>
+            <h1>TypeScript, Context API, axios</h1>
+        </section>
+        <section>
+            <h2>Introduction to TypeScript</h2>
+            <p>Why TypeScript?</p>
+            <p>Benefits over JavaScript</p>
+        </section>
+        <!-- Basic Types Slide -->
+        <section>
+            <h2>Basic Types</h2>
+            <pre><code>
+let isDone: boolean = false;
+let decimal: number = 6;
+let color: string = "blue";
+let list: number[] = [1, 2, 3];
+let x: [string, number] = ["hello", 10];
+            </code></pre>
+        </section>
+        <!-- Interfaces Slide -->
+        <section>
+            <h2>Interfaces</h2>
+            <pre><code>
+interface User {
+    name: string;
+    age: number;
+    isAdmin: boolean;
+}
+
+const user: User = {
+    name: "John",
+    age: 25,
+    isAdmin: false
+};
+            </code></pre>
+        </section>
+        
+        
+        <!-- Generics Slide -->
+        <section>
+            <h2>Generics</h2>
+            <pre><code>
+type ObjectWithNameArray = Array<{ name: string }>;
+
+interface Backpack<Type> {
+    add: (obj: Type) => void;
+    get: () => Type;
+}
+
+// This line is a shortcut to tell TypeScript there is a
+// constant called `backpack`, and to not worry about where it came from.
+declare const backpack: Backpack<string>;
+
+// object is a string, because we declared it above as the variable part of Backpack.
+const object = backpack.get();
+
+// Since the backpack variable is a string, you can't pass a number to the add function.
+backpack.add(23);
+            </code></pre>
+        </section>
+        <section>
+            <h2>Context API</h2>
+            <p>Why Context?</p>
+            <p>Benefits over passing props</p>
+        </section>
+        <section>
+            <img src="./images/why-context.jpg" />
+        </section>
+        <section>
+            <img src="./images/context1.png" />
+        </section>
+        <section>
+            <img src="./images/context2.png" />
+        </section>
+        <section>
+            <img src="./images/context3.png" />
+        </section>
+        <section>
+            <img src="./images/context4.png" />
+        </section>
+        <section>
+            <img src="./images/context5.png" />
+        </section>
+        <section>
+            <h2>Introduction to Axios</h2>
+            <p>Axios is a promise-based HTTP client for the browser and Node.js.</p>
+            <ul>
+                <li>Easy to use API</li>
+                <li>Supports the Promise API</li>
+                <li>Request and response interception</li>
+                <li>Transforming requests and responses</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Basic GET Request</h2>
+            <pre><code class="language-javascript">
+import axios from 'axios';
+
+const fetchData = async () => {
+    try {
+        const response = await axios.get('https://jsonplaceholder.typicode.com/posts');
+        console.log(response.data);
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+};
+
+fetchData();
+            </code></pre>
+        </section>
+        <section>
+            <h2>Basic POST Request</h2>
+            <pre><code class="language-javascript">
+import axios from 'axios';
+
+const postData = async () => {
+    try {
+        const response = await axios.post('https://jsonplaceholder.typicode.com/posts', {
+            title: 'foo',
+            body: 'bar',
+            userId: 1,
+        });
+        console.log(response.data);
+    } catch (error) {
+        console.error('Error posting data:', error);
+    }
+};
+
+postData();
+            </code></pre>
+        </section>
+        <section>
+            <h2>Handling Errors</h2>
+            <pre><code class="language-javascript">
+import axios from 'axios';
+
+const fetchData = async () => {
+    try {
+        const response = await axios.get('https://jsonplaceholder.typicode.com/invalid-url');
+        console.log(response.data);
+    } catch (error) {
+        if (error.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+            console.error('Response error:', error.response.data);
+        } else if (error.request) {
+            // The request was made but no response was received
+            console.error('No response received:', error.request);
+        } else {
+            // Something happened in setting up the request that triggered an Error
+            console.error('Error setting up request:', error.message);
+        }
+    }
+};
+
+fetchData();
+            </code></pre>
+        </section>
+        <section>
+            <img src="./images/interceptor.png" />
+        </section>
+        <section>
+            <pre>
+                <code class="language-javascript">
+// Making a GET request with custom headers
+const config = {
+    headers: {
+    Authorization: 'Bearer ACCESS_TOKEN'
+    }
+};
+
+axios.get('https://api.example.com/protected-resource', config)
+    .then(response => {
+        console.log(response.data);
+    })
+    .catch(error => {
+        console.error(error);
+    });
+                </code>
+            </pre>
+        </section>
+        <section>
+            <h2>Interceptors</h2>
+            <p>Interceptors allow you to run your code or modify the request/response before it is handled by then or catch.</p>
+            <pre><code class="language-javascript">
+import axios from 'axios';
+
+// Add a request interceptor to pass Bearer access token
+axios.interceptors.request.use(config => {
+    const authToken = localStorage.getItem('authToken');
+    if (authToken) {
+      config.headers.Authorization = `Bearer ${authToken}`;
+    }
+    return config;
+});
+
+// Add a response interceptor
+axios.interceptors.response.use(
+  response => response,
+  error => {
+    const status = error.response ? error.response.status : null;
+    
+    if (status === 401) {
+      // Handle unauthorized access
+    } else if (status === 404) {
+      // Handle not found errors
+    } else {
+      // Handle other errors
+    }
+    
+    return Promise.reject(error);
+  }
+);
+            </code></pre>
+        </section>
+                        
+                
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/notes/notes.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/markdown/markdown.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/highlight/highlight.min.js"></script>
+<script>
+    Reveal.initialize({
+        progress: true,
+        showSlideNumber: 'all',
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+    });
+</script>
+</body>
+</html>
